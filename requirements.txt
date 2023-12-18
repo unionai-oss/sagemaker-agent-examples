@@ -1,0 +1,5 @@
+flytekit
+xgboost
+fastapi
+uvicorn
+scikit-learn
