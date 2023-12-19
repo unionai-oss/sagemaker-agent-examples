@@ -8,7 +8,7 @@ kill -TERM "$child" 2>/dev/null
 trap _term SIGTERM
 
 echo "Starting the API server"
-uvicorn app.main:app --host 0.0.0.0 --port 8080&
+uvicorn sagemaker_example:app --host 0.0.0.0 --port 8080&
 
 child=$!
 wait "$child"

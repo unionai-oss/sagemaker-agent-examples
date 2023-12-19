@@ -3,3 +3,4 @@ xgboost
 fastapi
 uvicorn
 scikit-learn
+# flytekitplugins-sagemaker
