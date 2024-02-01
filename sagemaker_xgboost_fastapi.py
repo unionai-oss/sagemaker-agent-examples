@@ -13,11 +13,10 @@ from sklearn.model_selection import train_test_split
 
 custom_image = ImageSpec(
     name="sagemaker-xgboost",
-    registry="...",
+    registry=os.getenv("REGISTRY"),
     requirements="requirements.txt",
     apt_packages=["git"],
     source_root=".",
-    extra_path=["/root"],
 ).with_commands(["chmod +x /root/serve"])
 
 if custom_image.is_container():

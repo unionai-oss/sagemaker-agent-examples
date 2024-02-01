@@ -1,5 +1,5 @@
-git+https://github.com/flyteorg/flytekit.git@354ea387429b37cd8174885a79b9fa2dbbbc2717#egg=flytekit
-xgboost
+flytekit
+xgboost --default-timeout=500
 fastapi
 uvicorn
 scikit-learn
