@@ -1,5 +1,5 @@
 flytekit
-xgboost --default-timeout=500
+xgboost 
 fastapi
 uvicorn
 scikit-learn

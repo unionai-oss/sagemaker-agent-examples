@@ -11,10 +11,18 @@ from flytekitplugins.awssagemaker import (
     SagemakerInvokeEndpointTask,
     SagemakerModelTask,
 )
+from flytekitplugins.awssagemaker import (
+    create_sagemaker_deployment,
+    delete_sagemaker_deployment,
+)
+
 
 load_dotenv()
 
 REGION = os.getenv("REGION")
+MODEL_NAME = "sagemaker-xgboost"
+ENDPOINT_CONFIG_NAME = "sagemaker-xgboost-endpoint-config"
+ENDPOINT_NAME = "sagemaker-xgboost-endpoint"
 
 
 custom_image = ImageSpec(
@@ -26,6 +34,9 @@ custom_image = ImageSpec(
 ).with_commands(["chmod +x /root/serve"])
 
 
+####################
+# DEPLOYMENT TASKS #
+####################
 create_sagemaker_model = SagemakerModelTask(
     name="sagemaker_model",
     config={
@@ -95,13 +106,13 @@ delete_model = SagemakerDeleteModelTask(
 
 
 @workflow
-def sagemaker_xgboost_fastapi_deployment(
-    model_name: str = "sagemaker-xgboost",
+def example_workflow(
+    model_name: str = MODEL_NAME,
     model_data_url: str = os.getenv("MODEL_DATA_URL"),
     execution_role_arn: str = os.getenv("EXECUTION_ROLE_ARN"),
     s3_output_path: str = os.getenv("S3_OUTPUT_PATH"),
-    endpoint_config_name: str = "sagemaker-xgboost-endpoint-config",
-    endpoint_name: str = "sagemaker-xgboost-endpoint",
+    endpoint_config_name: str = ENDPOINT_CONFIG_NAME,
+    endpoint_name: str = ENDPOINT_NAME,
 ):
     create_sagemaker_model(
         model_name=model_name,
@@ -121,11 +132,81 @@ def sagemaker_xgboost_fastapi_deployment(
     delete_model(model_name=model_name)
 
 
+#######################
+# DEPLOYMENT WORKFLOW #
+#######################
+sagemaker_deployment_wf = create_sagemaker_deployment(
+    name="sagemaker-deployment",
+    model_input_types=kwtypes(model_path=str, execution_role_arn=str),
+    model_config={
+        "ModelName": MODEL_NAME,
+        "PrimaryContainer": {
+            "Image": "{container.image}",
+            "ModelDataUrl": "{inputs.model_path}",
+        },
+        "ExecutionRoleArn": "{inputs.execution_role_arn}",
+    },
+    endpoint_config_input_types=kwtypes(instance_type=str),
+    endpoint_config_config={
+        "EndpointConfigName": ENDPOINT_CONFIG_NAME,
+        "ProductionVariants": [
+            {
+                "VariantName": "variant-name-1",
+                "ModelName": MODEL_NAME,
+                "InitialInstanceCount": 1,
+                "InstanceType": "{inputs.instance_type}",
+            },
+        ],
+        "AsyncInferenceConfig": {
+            "OutputConfig": {"S3OutputPath": os.getenv("S3_OUTPUT_PATH")}
+        },
+    },
+    endpoint_config={
+        "EndpointName": ENDPOINT_NAME,
+        "EndpointConfigName": ENDPOINT_CONFIG_NAME,
+    },
+    container_image=custom_image,
+    region=REGION,
+)
+
+
+@workflow
+def model_deployment_workflow(
+    model_path: str = os.getenv("MODEL_DATA_URL"),
+    execution_role_arn: str = os.getenv("EXECUTION_ROLE_ARN"),
+) -> str:
+    return sagemaker_deployment_wf(
+        model_path=model_path,
+        execution_role_arn=execution_role_arn,
+        instance_type="ml.m4.xlarge",
+    )
+
+
+########################
+# INVOKE ENDPOINT TASK #
+########################
 invoke_endpoint = SagemakerInvokeEndpointTask(
     name="sagemaker_invoke_endpoint",
     config={
-        "EndpointName": "sagemaker-xgboost-endpoint",
+        "EndpointName": ENDPOINT_NAME,
         "InputLocation": os.getenv("INPUT_LOCATION"),
     },
     region=REGION,
 )
+
+
+################################
+# DEPLOYMENT DELETION WORKFLOW #
+################################
+sagemaker_deployment_deletion_wf = delete_sagemaker_deployment(
+    name="sagemaker-deployment-deletion", region=REGION
+)
+
+
+@workflow
+def deployment_deletion_workflow():
+    sagemaker_deployment_deletion_wf(
+        endpoint_name=ENDPOINT_NAME,
+        endpoint_config_name=ENDPOINT_CONFIG_NAME,
+        model_name=MODEL_NAME,
+    )
