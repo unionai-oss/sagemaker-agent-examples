@@ -1,4 +1,3 @@
-flytekit
 xgboost 
 fastapi
 uvicorn

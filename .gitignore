@@ -1,3 +1,8 @@
 .python-version
 __pycache__
 .env
+triton-serve-pt
+conversion.txt
+inference_input
+model.*
+triton-serve-trt

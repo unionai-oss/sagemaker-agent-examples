@@ -1,3 +1,5 @@
 -r requirements.txt
 
 python-dotenv
+flytekit
+flytekitplugins-envd
