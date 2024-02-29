@@ -1,0 +1,13 @@
+FROM python:3.11-slim-buster
+
+WORKDIR /root
+ENV PYTHONPATH /root
+
+RUN apt-get update && apt-get install -y build-essential git
+
+RUN pip install prometheus_client
+RUN pip install git+https://github.com/flyteorg/flytekit.git@f6fae6787c00831878d119019eb5b76bb7b1f602#egg=flytekit
+RUN pip install git+https://github.com/flyteorg/flyte.git@672bc3ed9362b484a5037ea77c5c9898f7903267#subdirectory=flyteidl
+RUN pip install git+https://github.com/flyteorg/flytekit.git@e298f40764308483e05c3149456bc06cee65be23#subdirectory=plugins/flytekit-aws-sagemaker
+
+CMD pyflyte serve agent --port 8000

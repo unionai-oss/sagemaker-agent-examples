@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from flytekit import kwtypes, workflow
-from flytekitplugins.awssagemaker import (
+from flytekitplugins.awssagemaker_inference import (
     SagemakerInvokeEndpointTask,
     create_sagemaker_deployment,
     delete_sagemaker_deployment,

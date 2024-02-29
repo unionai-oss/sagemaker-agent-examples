@@ -2,16 +2,16 @@ import os
 
 from dotenv import load_dotenv
 from flytekit import ImageSpec, kwtypes, workflow
-from flytekitplugins.awssagemaker import (
-    SagemakerDeleteEndpointConfigTask,
-    SagemakerDeleteEndpointTask,
-    SagemakerDeleteModelTask,
-    SagemakerEndpointConfigTask,
-    SagemakerEndpointTask,
-    SagemakerInvokeEndpointTask,
-    SagemakerModelTask,
+from flytekitplugins.awssagemaker_inference import (
+    SageMakerDeleteEndpointConfigTask,
+    SageMakerDeleteEndpointTask,
+    SageMakerDeleteModelTask,
+    SageMakerEndpointConfigTask,
+    SageMakerEndpointTask,
+    SageMakerInvokeEndpointTask,
+    SageMakerModelTask,
 )
-from flytekitplugins.awssagemaker import (
+from flytekitplugins.awssagemaker_inference import (
     create_sagemaker_deployment,
     delete_sagemaker_deployment,
 )
@@ -37,7 +37,7 @@ custom_image = ImageSpec(
 ####################
 # DEPLOYMENT TASKS #
 ####################
-create_sagemaker_model = SagemakerModelTask(
+create_sagemaker_model = SageMakerModelTask(
     name="sagemaker_model",
     config={
         "ModelName": "{inputs.model_name}",
@@ -52,7 +52,7 @@ create_sagemaker_model = SagemakerModelTask(
     inputs=kwtypes(model_name=str, model_data_url=str, execution_role_arn=str),
 )
 
-create_endpoint_config = SagemakerEndpointConfigTask(
+create_endpoint_config = SageMakerEndpointConfigTask(
     name="sagemaker_endpoint_config",
     config={
         "EndpointConfigName": "{inputs.endpoint_config_name}",
@@ -72,7 +72,7 @@ create_endpoint_config = SagemakerEndpointConfigTask(
     inputs=kwtypes(endpoint_config_name=str, model_name=str, s3_output_path=str),
 )
 
-create_endpoint = SagemakerEndpointTask(
+create_endpoint = SageMakerEndpointTask(
     name="sagemaker_endpoint",
     config={
         "EndpointName": "{inputs.endpoint_name}",
@@ -83,21 +83,21 @@ create_endpoint = SagemakerEndpointTask(
 )
 
 
-delete_endpoint = SagemakerDeleteEndpointTask(
+delete_endpoint = SageMakerDeleteEndpointTask(
     name="sagemaker_delete_endpoint",
     config={"EndpointName": "{inputs.endpoint_name}"},
     region=REGION,
     inputs=kwtypes(endpoint_name=str),
 )
 
-delete_endpoint_config = SagemakerDeleteEndpointConfigTask(
+delete_endpoint_config = SageMakerDeleteEndpointConfigTask(
     name="sagemaker_delete_endpoint_config",
     config={"EndpointConfigName": "{inputs.endpoint_config_name}"},
     region=REGION,
     inputs=kwtypes(endpoint_config_name=str),
 )
 
-delete_model = SagemakerDeleteModelTask(
+delete_model = SageMakerDeleteModelTask(
     name="sagemaker_delete_model",
     config={"ModelName": "{inputs.model_name}"},
     region=REGION,
@@ -136,7 +136,7 @@ def example_workflow(
 # DEPLOYMENT WORKFLOW #
 #######################
 sagemaker_deployment_wf = create_sagemaker_deployment(
-    name="sagemaker-deployment",
+    name="xgboost",
     model_input_types=kwtypes(model_path=str, execution_role_arn=str),
     model_config={
         "ModelName": MODEL_NAME,
@@ -185,7 +185,7 @@ def model_deployment_workflow(
 ########################
 # INVOKE ENDPOINT TASK #
 ########################
-invoke_endpoint = SagemakerInvokeEndpointTask(
+invoke_endpoint = SageMakerInvokeEndpointTask(
     name="sagemaker_invoke_endpoint",
     config={
         "EndpointName": ENDPOINT_NAME,

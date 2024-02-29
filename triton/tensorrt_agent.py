@@ -2,8 +2,8 @@ import os
 
 from dotenv import load_dotenv
 from flytekit import kwtypes, workflow
-from flytekitplugins.awssagemaker import (
-    SagemakerInvokeEndpointTask,
+from flytekitplugins.awssagemaker_inference import (
+    SageMakerInvokeEndpointTask,
     create_sagemaker_deployment,
     delete_sagemaker_deployment,
 )
@@ -51,7 +51,7 @@ triton_image_uri = (
 
 
 sagemaker_deployment_wf = create_sagemaker_deployment(
-    name="sagemaker-deployment-triton-tensorrt",
+    name="triton-tensorrt",
     model_input_types=kwtypes(model_path=str, execution_role_arn=str),
     model_config={
         "ModelName": MODEL_NAME,
@@ -101,7 +101,7 @@ def model_deployment_workflow(
 ########################
 # INVOKE ENDPOINT TASK #
 ########################
-invoke_endpoint = SagemakerInvokeEndpointTask(
+invoke_endpoint = SageMakerInvokeEndpointTask(
     name="sagemaker-triton-tensorrt-invoke-endpoint",
     config={
         "EndpointName": ENDPOINT_NAME,
