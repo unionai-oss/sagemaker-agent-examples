@@ -5,9 +5,9 @@ ENV PYTHONPATH /root
 
 RUN apt-get update && apt-get install -y build-essential git
 
-RUN pip install prometheus_client
-RUN pip install git+https://github.com/flyteorg/flytekit.git@f6fae6787c00831878d119019eb5b76bb7b1f602#egg=flytekit
-RUN pip install git+https://github.com/flyteorg/flyte.git@672bc3ed9362b484a5037ea77c5c9898f7903267#subdirectory=flyteidl
-RUN pip install git+https://github.com/flyteorg/flytekit.git@e298f40764308483e05c3149456bc06cee65be23#subdirectory=plugins/flytekit-aws-sagemaker
+RUN pip install prometheus_client grpcio-health-checking
+RUN pip install flyteidl==1.11.0b0 \
+    git+https://github.com/flyteorg/flytekit.git@master \
+    git+https://github.com/flyteorg/flytekit.git@284436347d21af3a1eee86434c18ccd0b8072835#subdirectory=plugins/flytekit-awssagemaker-inference
 
 CMD pyflyte serve agent --port 8000

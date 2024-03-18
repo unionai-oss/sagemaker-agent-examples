@@ -6,6 +6,7 @@ from flytekitplugins.awssagemaker_inference import (
     SageMakerInvokeEndpointTask,
     create_sagemaker_deployment,
     delete_sagemaker_deployment,
+    triton_image_uri,
 )
 
 load_dotenv()
@@ -16,39 +17,6 @@ ENDPOINT_CONFIG_NAME = "triton-resnet-trt-endpoint-config"
 REGION = "us-east-2"
 INSTANCE = "ml.g4dn.4xlarge"
 
-account_id_map = {
-    "us-east-1": "785573368785",
-    "us-east-2": "007439368137",
-    "us-west-1": "710691900526",
-    "us-west-2": "301217895009",
-    "eu-west-1": "802834080501",
-    "eu-west-2": "205493899709",
-    "eu-west-3": "254080097072",
-    "eu-north-1": "601324751636",
-    "eu-south-1": "966458181534",
-    "eu-central-1": "746233611703",
-    "ap-east-1": "110948597952",
-    "ap-south-1": "763008648453",
-    "ap-northeast-1": "941853720454",
-    "ap-northeast-2": "151534178276",
-    "ap-southeast-1": "324986816169",
-    "ap-southeast-2": "355873309152",
-    "cn-northwest-1": "474822919863",
-    "cn-north-1": "472730292857",
-    "sa-east-1": "756306329178",
-    "ca-central-1": "464438896020",
-    "me-south-1": "836785723513",
-    "af-south-1": "774647643957",
-}
-
-
-base = "amazonaws.com.cn" if REGION.startswith("cn-") else "amazonaws.com"
-triton_image_uri = (
-    "{account_id}.dkr.ecr.{region}.{base}/sagemaker-tritonserver:21.08-py3".format(
-        account_id=account_id_map[REGION], region=REGION, base=base
-    )
-)
-
 
 sagemaker_deployment_wf = create_sagemaker_deployment(
     name="triton-tensorrt",
@@ -56,7 +24,7 @@ sagemaker_deployment_wf = create_sagemaker_deployment(
     model_config={
         "ModelName": MODEL_NAME,
         "PrimaryContainer": {
-            "Image": "{container.image}",
+            "Image": "{images.triton_image}",
             "ModelDataUrl": "{inputs.model_path}",
             "Environment": {"SAGEMAKER_TRITON_DEFAULT_MODEL_NAME": "resnet"},
         },
@@ -81,7 +49,7 @@ sagemaker_deployment_wf = create_sagemaker_deployment(
         "EndpointName": ENDPOINT_NAME,
         "EndpointConfigName": ENDPOINT_CONFIG_NAME,
     },
-    container_image=triton_image_uri,
+    images={"triton_image": triton_image_uri},
     region=REGION,
 )
 

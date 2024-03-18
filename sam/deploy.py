@@ -18,7 +18,7 @@ sam_deployment_image = ImageSpec(
     name="sam-deployment",
     registry=os.getenv("REGISTRY"),
     packages=["transformers", "torch", "monai", "matplotlib", "fastapi", "uvicorn"],
-    base_image="samhitaalla/sam-base-image:0.0.2",  # required to copy code into the container when executing the workflow locally
+    source_root=".",
 ).with_commands(["chmod +x /root/serve"])
 
 
@@ -28,7 +28,7 @@ sam_deployment = create_sagemaker_deployment(
     model_config={
         "ModelName": MODEL_NAME,
         "PrimaryContainer": {
-            "Image": "{container.image}",
+            "Image": "{images.sam_deployment_image}",
             "ModelDataUrl": "{inputs.model_path}",
         },
         "ExecutionRoleArn": "{inputs.execution_role_arn}",
@@ -54,7 +54,7 @@ sam_deployment = create_sagemaker_deployment(
         "EndpointName": ENDPOINT_NAME,
         "EndpointConfigName": ENDPOINT_CONFIG_NAME,
     },
-    container_image=sam_deployment_image,
+    images = {"sam_deployment_image": sam_deployment_image},
     region=REGION,
 )
 

@@ -30,7 +30,7 @@ custom_image = ImageSpec(
     registry=os.getenv("REGISTRY"),
     requirements="requirements.txt",
     apt_packages=["git"],
-    base_image="samhitaalla/sagemaker-agent:0.0.1",  # Dockerfile
+    source_root=".",
 ).with_commands(["chmod +x /root/serve"])
 
 
@@ -42,13 +42,13 @@ create_sagemaker_model = SageMakerModelTask(
     config={
         "ModelName": "{inputs.model_name}",
         "PrimaryContainer": {
-            "Image": "{container.image}",
+            "Image": "{images.primary_container_image}",
             "ModelDataUrl": "{inputs.model_data_url}",
         },
         "ExecutionRoleArn": "{inputs.execution_role_arn}",
     },
+    images={"primary_container_image": custom_image},
     region=REGION,
-    container_image=custom_image,
     inputs=kwtypes(model_name=str, model_data_url=str, execution_role_arn=str),
 )
 
@@ -141,7 +141,7 @@ sagemaker_deployment_wf = create_sagemaker_deployment(
     model_config={
         "ModelName": MODEL_NAME,
         "PrimaryContainer": {
-            "Image": "{container.image}",
+            "Image": "{images.primary_container_image}",
             "ModelDataUrl": "{inputs.model_path}",
         },
         "ExecutionRoleArn": "{inputs.execution_role_arn}",
@@ -165,7 +165,7 @@ sagemaker_deployment_wf = create_sagemaker_deployment(
         "EndpointName": ENDPOINT_NAME,
         "EndpointConfigName": ENDPOINT_CONFIG_NAME,
     },
-    container_image=custom_image,
+    images={"primary_container_image": custom_image},
     region=REGION,
 )
 
