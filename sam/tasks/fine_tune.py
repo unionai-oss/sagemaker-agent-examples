@@ -1,5 +1,6 @@
 import numpy as np
 from flytekit import ImageSpec, Resources, task
+from flytekit.extras.accelerators import T4
 
 model_image = ImageSpec(
     name="sam-model",
@@ -72,9 +73,10 @@ def get_bounding_box(ground_truth_map):
     cache_version="0.1",
     container_image=model_image,
     requests=Resources(gpu="1", mem="20Gi"),
+    accelerator=T4,
 )
-def fine_tune_sam() -> torch.nn.Module:
-    dataset = load_dataset("nielsr/breast-cancer", split="train")
+def fine_tune_sam(dataset_name: str) -> torch.nn.Module:
+    dataset = load_dataset(dataset_name, split="train")
     processor = SamProcessor.from_pretrained("facebook/sam-vit-base")
     train_dataset = SAMDataset(dataset=dataset, processor=processor)
     train_dataloader = DataLoader(train_dataset, batch_size=2, shuffle=True)

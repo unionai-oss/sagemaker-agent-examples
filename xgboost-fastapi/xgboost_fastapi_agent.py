@@ -20,9 +20,9 @@ from flytekitplugins.awssagemaker_inference import (
 load_dotenv()
 
 REGION = os.getenv("REGION")
-MODEL_NAME = "sagemaker-xgboost"
-ENDPOINT_CONFIG_NAME = "sagemaker-xgboost-endpoint-config"
-ENDPOINT_NAME = "sagemaker-xgboost-endpoint"
+MODEL_NAME = "xgboost"
+ENDPOINT_CONFIG_NAME = "xgboost-endpoint-config"
+ENDPOINT_NAME = "xgboost-endpoint"
 
 
 custom_image = ImageSpec(
@@ -48,8 +48,8 @@ create_sagemaker_model = SageMakerModelTask(
         "ExecutionRoleArn": "{inputs.execution_role_arn}",
     },
     images={"primary_container_image": custom_image},
-    region=REGION,
     inputs=kwtypes(model_name=str, model_data_url=str, execution_role_arn=str),
+    region=REGION,
 )
 
 create_endpoint_config = SageMakerEndpointConfigTask(
@@ -199,7 +199,7 @@ invoke_endpoint = SageMakerInvokeEndpointTask(
 # DEPLOYMENT DELETION WORKFLOW #
 ################################
 sagemaker_deployment_deletion_wf = delete_sagemaker_deployment(
-    name="sagemaker-deployment-deletion", region=REGION
+    name="xgboost", region=REGION
 )
 
 
