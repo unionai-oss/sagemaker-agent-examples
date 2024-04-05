@@ -70,7 +70,7 @@ def get_bounding_box(ground_truth_map):
 
 @task(
     cache=True,
-    cache_version="0.1",
+    cache_version="2",
     container_image=model_image,
     requests=Resources(gpu="1", mem="20Gi"),
     accelerator=T4,

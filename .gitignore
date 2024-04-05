@@ -166,3 +166,9 @@ triton-serve-trt
 *.plan
 *.onnx
 *.pt
+hf_env.tar.gz
+djl_llama/
+images/
+s3_upload.py
+pt_export.py
+invoke_endpoint.py

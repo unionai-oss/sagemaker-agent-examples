@@ -4,6 +4,7 @@ from pathlib import Path
 import flytekit
 import numpy as np
 from flytekit import Resources, task
+from flytekit.extras.accelerators import T4
 from flytekit.types.directory import FlyteDirectory
 
 from .fine_tune import get_bounding_box, model_image
@@ -27,9 +28,10 @@ def show_mask(mask, ax, random_color=False):
 
 @task(
     cache=True,
-    cache_version="0.2",
+    cache_version="2",
     container_image=model_image,
     requests=Resources(gpu="1", mem="20Gi"),
+    accelerator=T4,
 )
 def batch_predict(model: torch.nn.Module) -> FlyteDirectory:
     dataset = load_dataset("nielsr/breast-cancer", split="train")

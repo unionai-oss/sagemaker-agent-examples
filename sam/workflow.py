@@ -1,22 +1,20 @@
-import os
 from datetime import timedelta
 
 from flytekit import approve, workflow
 
 from .tasks.batch_predict import batch_predict
-from .tasks.deploy import sam_deployment, compress_model
+from .tasks.compress_model import compress_model
+from .tasks.deploy import sam_deployment
 from .tasks.fine_tune import fine_tune_sam
 
 
 @workflow
 def sam_sagemaker_deployment(
+    execution_role_arn: str,
     dataset_name: str = "nielsr/breast-cancer",
     model_name: str = "sam-model",
     endpoint_config_name: str = "sam-endpoint-config",
     endpoint_name: str = "sam-endpoint",
-    execution_role_arn: str = os.getenv(
-        "EXECUTION_ROLE_ARN"
-    ),  # send while registering the workflow,
     instance_type: str = "ml.m4.xlarge",
     initial_instance_count: int = 1,
     region: str = "us-east-2",

@@ -1,6 +1,5 @@
 import os
 
-from dotenv import load_dotenv
 from flytekit import kwtypes, workflow
 from flytekitplugins.awssagemaker_inference import (
     SagemakerInvokeEndpointTask,
@@ -8,7 +7,6 @@ from flytekitplugins.awssagemaker_inference import (
     delete_sagemaker_deployment,
 )
 
-load_dotenv()
 
 MODEL_NAME = "triton-resnet-pt"
 ENDPOINT_NAME = "triton-resnet-pt-endpoint"

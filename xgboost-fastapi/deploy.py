@@ -1,6 +1,5 @@
 import os
 
-from dotenv import load_dotenv
 from flytekit import ImageSpec, kwtypes, workflow
 from flytekitplugins.awssagemaker_inference import (
     SageMakerDeleteEndpointConfigTask,
@@ -16,10 +15,7 @@ from flytekitplugins.awssagemaker_inference import (
     delete_sagemaker_deployment,
 )
 
-
-load_dotenv()
-
-REGION = os.getenv("REGION")
+REGION = "us-east-2"
 MODEL_NAME = "xgboost"
 ENDPOINT_CONFIG_NAME = "xgboost-endpoint-config"
 ENDPOINT_NAME = "xgboost-endpoint"
@@ -30,7 +26,7 @@ custom_image = ImageSpec(
     registry=os.getenv("REGISTRY"),
     requirements="requirements.txt",
     apt_packages=["git"],
-    source_root=".",
+    source_root="fastapi",
 ).with_commands(["chmod +x /root/serve"])
 
 
@@ -158,7 +154,9 @@ sagemaker_deployment_wf = create_sagemaker_deployment(
             },
         ],
         "AsyncInferenceConfig": {
-            "OutputConfig": {"S3OutputPath": os.getenv("S3_OUTPUT_PATH")}
+            "OutputConfig": {
+                "S3OutputPath": "s3://sagemaker-agent-xgboost/inference-output/output"
+            }
         },
     },
     endpoint_config={
@@ -172,8 +170,8 @@ sagemaker_deployment_wf = create_sagemaker_deployment(
 
 @workflow
 def model_deployment_workflow(
-    model_path: str = os.getenv("MODEL_DATA_URL"),
-    execution_role_arn: str = os.getenv("EXECUTION_ROLE_ARN"),
+    execution_role_arn: str,
+    model_path: str = "s3://sagemaker-agent-xgboost/model.tar.gz",
 ) -> str:
     return sagemaker_deployment_wf(
         model_path=model_path,
