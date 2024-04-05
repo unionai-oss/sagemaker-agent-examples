@@ -1,1 +1,1 @@
-# Deploy Stable Diffusion on AWS SageMaker using Triton
+# Deploy Stable Diffusion Using Triton Inference Server on AWS SageMaker
