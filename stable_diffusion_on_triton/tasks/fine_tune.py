@@ -174,7 +174,7 @@ if sd_finetuning_image.is_container():
     @task(
         cache=True,
         cache_version="1",
-        # container_image=sd_finetuning_image,
+        container_image=sd_finetuning_image,
         requests=Resources(gpu="5", mem="30Gi", cpu="30"),
         task_config=Elastic(nnodes=1, nproc_per_node=5),  # distributed training
         pod_template=PodTemplate(
