@@ -1,21 +1,18 @@
-from flytekit import task, ImageSpec, Resources, PodTemplate, Secret
-from dataclasses import dataclass
-from mashumaro.mixins.json import DataClassJSONMixin
-from pathlib import Path
-import os
 import logging
 import math
 import os
 import random
 import shutil
+from dataclasses import dataclass
 from pathlib import Path
-from packaging import version
 from typing import Optional
+
 import flytekit
-
 import numpy as np
+from flytekit import ImageSpec, PodTemplate, Resources, Secret, task
+from mashumaro.mixins.json import DataClassJSONMixin
+from packaging import version
 from tqdm.auto import tqdm
-
 
 sd_finetuning_image = ImageSpec(
     name="sd_finetuning",
@@ -94,9 +91,16 @@ DATASET_NAME_MAPPING = {
 }
 
 if sd_finetuning_image.is_container():
-    from transformers import CLIPTextModel, CLIPTokenizer
-
+    import datasets
     import diffusers
+    import torch
+    import torch.nn.functional as F
+    import torch.utils.checkpoint
+    import transformers
+    from accelerate import Accelerator
+    from accelerate.logging import get_logger
+    from accelerate.utils import ProjectConfiguration, set_seed
+    from datasets import load_dataset
     from diffusers import (
         AutoencoderKL,
         DDPMScheduler,
@@ -106,25 +110,11 @@ if sd_finetuning_image.is_container():
     from diffusers.optimization import get_scheduler
     from diffusers.training_utils import cast_training_params, compute_snr
     from diffusers.utils import convert_state_dict_to_diffusers
+    from diffusers.utils.hub_utils import load_or_create_model_card, populate_model_card
     from diffusers.utils.import_utils import is_xformers_available
     from diffusers.utils.torch_utils import is_compiled_module
-
-    from peft import LoraConfig
-    from peft.utils import get_peft_model_state_dict
-    from torchvision import transforms
-    import datasets
-
-    import torch
-    import torch.nn.functional as F
-    import torch.utils.checkpoint
-    import transformers
-    from accelerate import Accelerator
-    from accelerate.logging import get_logger
-    from accelerate.utils import ProjectConfiguration, set_seed
-    from datasets import load_dataset
+    from flytekitplugins.kfpytorch import Elastic
     from huggingface_hub import create_repo, upload_folder
-    from diffusers.utils.hub_utils import load_or_create_model_card, populate_model_card
-
     from kubernetes.client.models import (
         V1Container,
         V1EmptyDirVolumeSource,
@@ -132,7 +122,10 @@ if sd_finetuning_image.is_container():
         V1Volume,
         V1VolumeMount,
     )
-    from flytekitplugins.kfpytorch import Elastic
+    from peft import LoraConfig
+    from peft.utils import get_peft_model_state_dict
+    from torchvision import transforms
+    from transformers import CLIPTextModel, CLIPTokenizer
 
     logger = get_logger(__name__, log_level="INFO")
 

@@ -1,14 +1,11 @@
 from flytekit import workflow
 
+from stable_diffusion_on_triton.tasks.deploy import sd_deployment
 from stable_diffusion_on_triton.tasks.fine_tune import (
     FineTuningArgs,
     stable_diffusion_finetuning,
 )
-from stable_diffusion_on_triton.tasks.optimize import (
-    optimize_model,
-    compress_model,
-)
-from stable_diffusion_on_triton.tasks.deploy import sd_deployment
+from stable_diffusion_on_triton.tasks.optimize import compress_model, optimize_model
 
 
 @workflow

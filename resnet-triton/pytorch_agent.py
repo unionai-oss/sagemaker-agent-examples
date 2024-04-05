@@ -7,7 +7,6 @@ from flytekitplugins.awssagemaker_inference import (
     delete_sagemaker_deployment,
 )
 
-
 MODEL_NAME = "triton-resnet-pt"
 ENDPOINT_NAME = "triton-resnet-pt-endpoint"
 ENDPOINT_CONFIG_NAME = "triton-resnet-pt-endpoint-config"

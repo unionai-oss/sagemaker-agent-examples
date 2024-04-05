@@ -1,5 +1,5 @@
-import tritonclient.http as httpclient
 import numpy as np
+import tritonclient.http as httpclient
 from PIL import Image
 
 header_length_prefix = "application/vnd.sagemaker-triton.binary+json;json-header-size="

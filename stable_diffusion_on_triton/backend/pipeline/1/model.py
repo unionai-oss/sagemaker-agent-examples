@@ -25,15 +25,14 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import json
+
 import numpy as np
 import torch
 import triton_python_backend_utils as pb_utils
-
-from torch.utils.dlpack import to_dlpack, from_dlpack
-from transformers import CLIPTokenizer
-from diffusers import LMSDiscreteScheduler, UNet2DConditionModel, DiffusionPipeline
+from diffusers import DiffusionPipeline, LMSDiscreteScheduler, UNet2DConditionModel
+from torch.utils.dlpack import from_dlpack, to_dlpack
 from tqdm.auto import tqdm
-import json
+from transformers import CLIPTokenizer
 
 
 class TritonPythonModel:

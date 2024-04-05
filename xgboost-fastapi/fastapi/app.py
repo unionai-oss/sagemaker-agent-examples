@@ -5,7 +5,7 @@ from datetime import datetime
 
 import flytekit
 import numpy as np
-from fastapi import Request, Response, status, FastAPI
+from fastapi import FastAPI, Request, Response, status
 from flytekit import ImageSpec, task, workflow
 from flytekit.types.file import FlyteFile
 from numpy import loadtxt

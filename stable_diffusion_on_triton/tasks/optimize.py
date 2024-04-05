@@ -1,14 +1,13 @@
-from flytekit import task, Resources, ImageSpec
-from flytekit.types.directory import FlyteDirectory
 import os
-import subprocess
-import flytekit
 import shutil
-from flytekit.extras.accelerators import T4
+import subprocess
 import tarfile
+
+import flytekit
+from flytekit import ImageSpec, Resources, task
+from flytekit.extras.accelerators import T4
 from flytekit.types.directory import FlyteDirectory
 from flytekit.types.file import FlyteFile
-
 
 sd_compilation_image = ImageSpec(
     name="sd_optimization",

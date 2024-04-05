@@ -5,7 +5,6 @@ from flytekitplugins.awssagemaker_inference import (
     triton_image_uri,
 )
 
-
 sd_deployment = create_sagemaker_deployment(
     name="stable-diffusion",
     model_input_types=kwtypes(

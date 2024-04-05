@@ -9,8 +9,6 @@ from flytekitplugins.awssagemaker_inference import (
     SageMakerEndpointTask,
     SageMakerInvokeEndpointTask,
     SageMakerModelTask,
-)
-from flytekitplugins.awssagemaker_inference import (
     create_sagemaker_deployment,
     delete_sagemaker_deployment,
 )
