@@ -1,10 +1,12 @@
+import os
+
 import numpy as np
 from flytekit import ImageSpec, Resources, task
 from flytekit.extras.accelerators import T4
 
 model_image = ImageSpec(
     name="sam-model",
-    registry="samhitaalla",
+    registry=os.getenv("REGISTRY"),
     packages=["transformers", "torch", "monai", "flytekit", "datasets", "matplotlib"],
     cuda="12.1.0",
     cudnn="8",
