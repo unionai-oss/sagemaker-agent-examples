@@ -25,13 +25,13 @@ const awsConfig = new AWSConfig({
 });
 
 export const options = {
-  // thresholds: {
-  //   http_req_failed: ['rate<0.1'],
-  // },
+  thresholds: {
+    http_req_failed: ['rate<0.1'],
+  },
   scenarios: {
     test: {
       executor: 'constant-vus',
-      duration: '90s',
+      duration: '180s',
       vus: vu,
     },
   },
