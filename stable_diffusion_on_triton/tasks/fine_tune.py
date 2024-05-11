@@ -53,7 +53,7 @@ logger = get_logger(__name__, log_level="INFO")
 torch._logging.set_logs(all=logging.DEBUG)
 
 SECRET_GROUP = "arn:aws:secretsmanager:us-east-2:356633062068:secret:"
-SECRET_KEY = "huggingface_hub_api_key-qwgGkT"
+SECRET_KEY = "samhita-hf-token-fjxgnm"
 
 sd_finetuning_image = ImageSpec(
     name="sd_finetuning",
@@ -242,6 +242,7 @@ def stable_diffusion_finetuning(args: FineTuningArgs) -> str:
         set_seed(args.seed)
 
     # Handle the repository creation
+    repo_id = None
     if accelerator.is_main_process:
         if args.output_dir is not None:
             os.makedirs(args.output_dir, exist_ok=True)
